@@ -1,0 +1,8 @@
+openssl req -newkey rsa:2048 -nodes -keyout tls.key -subj "/CN=localhost" -x509 -days 3650 -out tls.crt 
+
+#clienteMQ previamente instalado
+runmqakm -keydb -create -db clientkey.kdb -pw password -type cms -stash 
+runmqakm -cert -add -db clientkey.kdb -label mqservercert -file tls.crt -format ascii -stashed 
+
+#creacion de secret Openshift
+oc create secret tls example-tls-secret --key="tls.key" --cert="tls.crt" -n openshift-operators 
