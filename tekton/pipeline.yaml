@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1 
+kind: Pipeline 
+metadata: 
+  name: despliegue-mq 
+  namespace: tekton-pipelines 
+spec: 
+  tasks: 
+    - name: deploy-route 
+      params: 
+        - name: yamlfile 
+          value: 'http://BastionOp.lab.azure:80/IBMMQ/route.yaml' 
+      taskRef: 
+        kind: Task 
+        name: deploy-yaml 
+    - name: deploy-configmap 
+      params: 
+        - name: yamlfile 
+          value: 'http://BastionOp.lab.azure:80/IBMMQ/configmap.yaml' 
+      taskRef: 
+        kind: Task 
+        name: deploy-yaml 
+    - name: deploy-queuemanager 
+      params: 
+        - name: yamlfile 
+          value: 'http://BastionOp.lab.azure:80/IBMMQ/queuemanager.yaml' 
+      runAfter: 
+        - deploy-configmap 
+        - deploy-route 
+      taskRef: 
+        kind: Task 
+        name: deploy-yaml 
